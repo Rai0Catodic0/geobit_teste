@@ -3,12 +3,12 @@ from loja.models import Autor, Livro
 
 
 class AutorSerializer(serializers.ModelSerializer):
-    class meta:
+    class Meta:
         model = Autor
         fields = "__all__"
 
 class LivroSerializer(serializers.ModelSerializer):
-    class meta:
+    class Meta:
         model = Livro
         fields ="__all__"
 

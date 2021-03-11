@@ -21,16 +21,16 @@ def add_livro(request):
     payload = json.loads(request.body)
     try:
         autor = Autor.objects.get(nome=payload["autor"])
-        livro = Livro.objects.create(
-            nome = payload["nome"],
-            autor = autor,
-            quantidade_de_paginas = payload["quantidade_de_paginas"],
-            preco= payload["preco"]
-        )
-        serializer = LivroSerializer(livro)
-        return JsonResponse({'livros':serializer.data},safe=False, status = status.HTTP_201_CREATED)
-    except ObjectDoesNotExist as e :
-        return JsonResponse({'error':str(e)},safe=False, status = status.HTTP_404_NOT_FOUND)
-    except Exception as e:
-        return JsonResponse({'error':e},safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except ObjectDoesNotExist:
+        autor = Autor.objects.create(nome=payload["autor"])
+
+    livro = Livro.objects.create(
+        nome = payload["nome"],
+        autor = autor,
+        quantidade_de_paginas = payload["quantidade_de_paginas"],
+        preco= payload["preco"]
+    )
+    serializer = LivroSerializer(livro)
+    return JsonResponse({'livros':serializer.data},safe=False, status = status.HTTP_201_CREATED)
+
     
