@@ -1,5 +1,5 @@
 from rest_framework.decorators import api_view
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.core import serializers
 from .models import Livro, Autor
 import json
@@ -12,7 +12,7 @@ import datetime
 @api_view(["GET"])
 def get_livros(request):
     livros = Livro.objects.all()
-    return JsonResponse({'livros': serializers.serialize('json',livros)},safe=False, status=status.HTTP_200_OK)
+    return JsonResponse({'livros': serializers.serialize('json',livros)}, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
@@ -30,7 +30,7 @@ def add_livro(request):
         preco= payload["preco"]
     )
     livro = Livro.objects.filter(nome=payload["nome"])
-    return JsonResponse({'livros':serializers.serialize("json",livro)},safe=False, status = status.HTTP_201_CREATED)
+    return JsonResponse({'livros':serializers.serialize("json",livro)}, status = status.HTTP_201_CREATED)
 
 @api_view(["PUT"])
 def update_livro(request, id_livro):
@@ -43,4 +43,12 @@ def update_livro(request, id_livro):
         return JsonResponse({'book': livro}, status=status.HTTP_200_OK)
     except ObjectDoesNotExist as e:
         return JsonResponse({'error': str(e)}, status=status.HTTP_404_NOT_FOUND)
-        
+
+@api_view(["DELETE"])
+def delete_livro(request, id_livro):
+    try:
+        livro = Livro.objects.filter(id=id_livro)
+        livro.delete()
+        return HttpResponse(status = status.HTTP_204_NO_CONTENT)
+    except ObjectDoesNotExist as e:
+        return JsonResponse({'error': str(e)},status=status.HTTP_404_NOT_FOUND)
